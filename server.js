@@ -1,5 +1,21 @@
-const app = require('./app')
+const mongoConnect = require("./db/connection");
+const app = require("./app");
 
-app.listen(3000, () => {
-  console.log("Server running. Use our API on port: 3000")
-})
+const { PORT } = process.env;
+
+async function startServer() {
+  try {
+    await mongoConnect();
+    app.listen(PORT, (error) => {
+      if (error) {
+        console.log("Server connection error");
+      }
+
+      console.log(`Server running. Use our API on port: ${PORT}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+startServer();
