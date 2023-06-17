@@ -1,7 +1,6 @@
 const User = require("../db/models/userModel");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
-
 const { SECRET_KEY } = process.env;
 
 async function signup(req, res, next) {
@@ -25,7 +24,6 @@ async function signup(req, res, next) {
     await newUser.hashPassword(password);
 
     await newUser.save();
-
     const payload = {
       id: newUser._id,
     };
@@ -72,10 +70,9 @@ async function login(req, res, next) {
   }
 }
 
-async function logout(req, res, next) {
+async function logout(req, res) {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
-
   res.status(204).send();
 }
 
