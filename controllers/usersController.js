@@ -83,8 +83,15 @@ async function logout(req, res) {
   res.status(204).send();
 }
 
+async function current(req, res, next) {
+  const { name, email } = req.body;
+
+  res.json({ name, email });
+}
+
 module.exports = {
   signup,
   login,
   logout,
+  current,
 };
