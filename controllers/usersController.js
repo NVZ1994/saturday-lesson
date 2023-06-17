@@ -2,6 +2,7 @@ const User = require("../db/models/userModel");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 
+
 const { SECRET_KEY } = process.env;
 
 async function signup(req, res, next) {
@@ -24,11 +25,12 @@ async function signup(req, res, next) {
 
     await newUser.hashPassword(password);
 
-    newUser.save();
+    await newUser.save();
     const payload = {
       id: newUser._id,
     };
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" });
+    await User.findByIdAndUpdate(newUser._id, {token})
     res.status(201).json({ user: { name, email, avatar }, token });
   } catch (error) {
     console.log(error.message);
@@ -62,7 +64,7 @@ async function login(req, res, next) {
 
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" });
 
-    await User.findByIdAndUpdate(user._id, token);
+    await User.findByIdAndUpdate(user._id, {token});
 
     res.json({ user: { name: user.name, email, avatar: user.avatar }, token });
   } catch (error) {
@@ -71,7 +73,13 @@ async function login(req, res, next) {
   }
 }
 
+async function logout (req, res) {
+  const {_id} = req.user;
+  await User.findByIdAndUpdate(_id, {token: ""})
+  res.status(204).send()
+}
 module.exports = {
   signup,
   login,
+  logout
 };
