@@ -5,8 +5,10 @@ const { SECRET_KEY } = process.env;
 
 async function signup(req, res, next) {
   const { name, email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
+
     if (user) {
       res.status(409).json({ message: `User with '${email}' already exists` });
       return;
@@ -24,12 +26,15 @@ async function signup(req, res, next) {
     await newUser.hashPassword(password);
 
     await newUser.save();
+
     const payload = {
       id: newUser._id,
     };
 
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" });
+
     await User.findByIdAndUpdate(newUser._id, { token });
+
     res.status(201).json({ user: { name, email, avatar }, token });
   } catch (error) {
     console.log(error.message);
@@ -72,7 +77,9 @@ async function login(req, res, next) {
 
 async function logout(req, res) {
   const { _id } = req.user;
+
   await User.findByIdAndUpdate(_id, { token: "" });
+
   res.status(204).send();
 }
 
