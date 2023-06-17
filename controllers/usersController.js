@@ -24,11 +24,14 @@ async function signup(req, res, next) {
 
     await newUser.hashPassword(password);
 
-    newUser.save();
+    await newUser.save();
+
     const payload = {
       id: newUser._id,
     };
+
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" });
+    await User.findByIdAndUpdate(newUser._id, { token });
     res.status(201).json({ user: { name, email, avatar }, token });
   } catch (error) {
     console.log(error.message);
@@ -41,8 +44,6 @@ async function login(req, res, next) {
 
   try {
     const user = await User.findOne({ email });
-
-    console.log(user);
 
     if (!user) {
       res.status(401).json({ message: "Email or password is wrong" });
@@ -62,7 +63,7 @@ async function login(req, res, next) {
 
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" });
 
-    await User.findByIdAndUpdate(user._id, token);
+    await User.findByIdAndUpdate(user._id, { token });
 
     res.json({ user: { name: user.name, email, avatar: user.avatar }, token });
   } catch (error) {
@@ -71,7 +72,15 @@ async function login(req, res, next) {
   }
 }
 
+async function logout(req, res, next) {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: "" });
+
+  res.status(204).send();
+}
+
 module.exports = {
   signup,
   login,
+  logout,
 };
