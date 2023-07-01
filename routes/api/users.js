@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const upload = require("../../middlewares/upload")
+const upload = require("../../middlewares/upload");
 
 const {
   signup,
@@ -9,7 +9,6 @@ const {
   logout,
   current,
   updateAvatar,
-  
 } = require("../../controllers/usersController");
 const userSignUpValidation = require("../../middlewares/validation/userSignUp");
 const userLoginValidation = require("../../middlewares/validation/userLogin");
@@ -19,6 +18,6 @@ router.post("/register", userSignUpValidation, signup);
 router.post("/login", userLoginValidation, login);
 router.post("/logout", authenticate, logout);
 router.get("/current", authenticate, current);
-router.patch('/avatar', authenticate, upload.single("avatar"), updateAvatar)
+router.patch("/avatar", authenticate, upload.single("avatar"), updateAvatar);
 
 module.exports = router;

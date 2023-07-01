@@ -2,12 +2,10 @@ const User = require("../db/models/userModel");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const { SECRET_KEY } = process.env;
-const path = require("path")
-const fs = require("fs/promises")
+const path = require("path");
+const fs = require("fs/promises");
 
-
-const pathAvatar = path.join(__dirname, '../public/avatar')
-
+const pathAvatar = path.join(__dirname, "../public/avatar");
 
 async function signup(req, res, next) {
   const { name, email, password } = req.body;
@@ -96,21 +94,21 @@ async function current(req, res, next) {
 }
 
 const updateAvatar = async (req, res, next) => {
-  const { _id } = req.user
+  const { _id } = req.user;
   const { path: filePath, originalname } = req.file;
 
-  const newName = `${_id}_${originalname}`
+  const newName = `${_id}_${originalname}`;
 
-  const newPath = path.join(pathAvatar, newName)
+  const newPath = path.join(pathAvatar, newName);
 
   await fs.rename(filePath, newPath);
 
-  const avatarPathNew = path.join("avatar", newName)
-  
-    await User.findByIdAndUpdate(_id, { avatar: avatarPathNew});
+  const avatarPathNew = path.join("avatar", newName);
 
-  res.json({avatar:avatarPathNew})
-}
+  await User.findByIdAndUpdate(_id, { avatar: avatarPathNew });
+
+  res.json({ avatar: avatarPathNew });
+};
 
 module.exports = {
   signup,
